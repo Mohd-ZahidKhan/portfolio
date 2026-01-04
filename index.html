@@ -7,13 +7,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- 1. SETTINGS & RESET --- */
         :root {
-            --neon-blue: #06b6d4;      /* Cyan */
-            --neon-purple: #d946ef;    /* Magenta */
-            --bg-deep: #020617;        /* Dark Space */
+            --neon-blue: #06b6d4;
+            --neon-purple: #d946ef;
+            --neon-green: #22c55e;
+            --bg-deep: #020617;
             --glass-border: rgba(255, 255, 255, 0.1);
         }
 
@@ -29,7 +30,7 @@
             min-height: 100vh;
         }
 
-        /* --- 2. MAGIC STAR TRAIL --- */
+        /* --- MOUSE TRAIL STARS --- */
         .magic-star {
             position: absolute; pointer-events: none; animation: fallAndFade 0.8s linear forwards;
             z-index: 9999; font-size: 10px; color: white;
@@ -39,7 +40,26 @@
             100% { transform: translate(0, 50px) scale(0) rotate(180deg); opacity: 0; }
         }
 
-        /* --- 3. BACKGROUND LAYERS --- */
+        /* --- NEW: FALLING BLURRED METEORS --- */
+        .meteor {
+            position: fixed;
+            top: -100px;
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.8));
+            filter: blur(2px); /* Blur effect requested */
+            z-index: -5; /* Behind everything */
+            pointer-events: none;
+            opacity: 0.6;
+            animation: meteorFall 3s linear forwards;
+        }
+
+        @keyframes meteorFall {
+            0% { transform: translateY(0) translateX(0) rotate(-15deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            100% { transform: translateY(120vh) translateX(-20vw) rotate(-15deg); opacity: 0; }
+        }
+
         .fixed-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #172554 0%, #020617 80%); }
         .grid-overlay { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.3; transform: perspective(500px) rotateX(20deg); pointer-events: none; }
         .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px); background-size: 550px 550px; opacity: 0.5; animation: twinkle 5s infinite; }
@@ -48,17 +68,61 @@
         .sphere-1 { width: 50vw; height: 50vw; background: #1d4ed8; top: -10%; left: -10%; }
         .sphere-2 { width: 40vw; height: 40vw; background: #7e22ce; bottom: 0; right: -10%; }
 
-        /* --- 4. NAVIGATION --- */
         nav { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 100; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-logo { font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; }
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        
         .hire-btn { font-size: 0.9rem; color: var(--neon-blue); background: rgba(6, 182, 212, 0.05); border: 1px solid var(--neon-blue); padding: 10px 25px; border-radius: 30px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
         .hire-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 25px var(--neon-blue); transform: translateY(-2px); }
 
-        /* --- 5. HERO SECTION --- */
+        .roll-btn-container {
+            width: 50px; height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .spin-wheel-img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.5s ease;
+        }
+
+        .roll-btn-container:hover .spin-wheel-img {
+            transform: rotate(180deg);
+            box-shadow: 0 0 25px var(--neon-purple);
+        }
+
+        .roll-btn-container.disabled {
+            pointer-events: none;
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
         section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 20px; }
         .hero-container { perspective: 1000px; }
-        .hero-content { text-align: center; transition: transform 0.1s ease-out; transform-style: preserve-3d; }
-        .header-tag { color: var(--neon-blue); letter-spacing: 3px; text-transform: uppercase; font-size: 1rem; margin-bottom: 40px; display: inline-block; border-bottom: 1px solid var(--neon-blue); padding-bottom: 5px; transform: translateZ(20px); }
+        
+        .hero-content { 
+            text-align: center; 
+            transform-style: preserve-3d; 
+            transition: transform 0.1s ease-out; 
+        }
+        
+        .barrel-roll {
+            animation: spinHighSpeed 2.5s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        @keyframes spinHighSpeed {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(1080deg); } 
+        }
+
+        .header-tag { color: var(--neon-blue); letter-spacing: 3px; text-transform: uppercase; font-size: 1rem; margin-bottom: 40px; display: inline-block; border-bottom: 1px solid var(--neon-blue); padding-bottom: 5px; transform: translateZ(20px); min-height: 30px; }
+        .cursor { display: inline-block; width: 2px; background-color: var(--neon-blue); animation: blink 1s infinite; margin-left: 5px; vertical-align: bottom; height: 1.2em; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
         .hero-main { display: flex; align-items: center; justify-content: center; gap: 50px; transform: translateZ(50px); }
         
         .role-left { font-size: clamp(2rem, 5vw, 4rem); font-weight: 300; color: transparent; -webkit-text-stroke: 1px var(--neon-purple); text-shadow: 0 0 15px rgba(217, 70, 239, 0.3); transition: all 0.3s ease; cursor: default; }
@@ -73,13 +137,12 @@
         .social-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
         .social-btn:hover { background: white; color: black; box-shadow: 0 0 20px white; transform: translateY(-3px); }
         .social-btn svg { width: 22px; height: 22px; fill: currentColor; }
-        .btn-group { display: flex; gap: 20px; }
+        .btn-group { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .btn-outline { padding: 12px 30px; border: 1px solid var(--neon-blue); color: var(--neon-blue); text-decoration: none; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; transition: 0.3s; display: inline-block; cursor: pointer; }
         .btn-outline:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
         .btn-resume { padding: 12px 30px; border: 1px solid var(--neon-purple); color: var(--neon-purple); text-decoration: none; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; transition: 0.3s; display: inline-block; cursor: pointer; }
         .btn-resume:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 20px var(--neon-purple); }
 
-        /* --- 6. ABOUT SECTION --- */
         .about-card { width: 100%; max-width: 1000px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 60px; display: grid; grid-template-areas: "info skills" "contact contact"; grid-template-columns: 1fr 1fr; gap: 40px; opacity: 0; transform: translateY(50px); transition: 1s ease-out; margin-bottom: 50px; }
         .about-card.visible { opacity: 1; transform: translateY(0); }
         .highlight-glow { animation: pulseGlow 2.5s ease-in-out; border: 1px solid var(--neon-purple); box-shadow: 0 0 50px rgba(217, 70, 239, 0.4); }
@@ -99,13 +162,45 @@
         .contact-link { font-size: 1.1rem; color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: 0.3s; padding: 10px 20px; border-radius: 8px; }
         .contact-link:hover { color: white; background: rgba(255,255,255,0.1); transform: scale(1.05); }
 
-        /* --- 7. RESUME MODAL --- */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal-content { background: #0f172a; border: 1px solid var(--neon-purple); border-radius: 15px; width: 90%; max-width: 800px; height: 85vh; overflow-y: auto; box-shadow: 0 0 50px rgba(217, 70, 239, 0.2); position: relative; animation: slideUpModal 0.4s ease; }
+        
         @keyframes slideUpModal { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { position: sticky; top: 0; background: #0f172a; padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .close-btn { color: #94a3b8; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .close-btn:hover { color: white; }
+        
+        .visitor-content { max-width: 500px; height: auto; border-color: var(--neon-green); box-shadow: 0 0 50px rgba(34, 197, 94, 0.2); font-family: 'JetBrains Mono', monospace; }
+        .visitor-header { background: rgba(34, 197, 94, 0.1); padding: 15px 20px; border-bottom: 1px solid rgba(34, 197, 94, 0.3); display: flex; justify-content: space-between; align-items: center; }
+        .visitor-title { color: var(--neon-green); font-weight: 700; letter-spacing: 2px; }
+        .visitor-body { padding: 30px; }
+        
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
+        .data-label { color: #94a3b8; font-size: 0.9rem; }
+        .data-value { color: white; font-weight: 700; text-align: right; }
+        .status-active { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
+
+        .cert-content { max-width: 900px; }
+        .gallery-container { display: flex; align-items: center; justify-content: space-between; padding: 20px; gap: 20px; }
+        .image-wrapper { width: 100%; height: auto; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-bottom: 20px; }
+        .image-wrapper img { max-width: 100%; max-height: 350px; border-radius: 8px; border: 2px solid var(--glass-border); box-shadow: 0 0 30px rgba(0,0,0,0.5); object-fit: contain; }
+        .cert-caption { margin-top: 15px; color: var(--neon-blue); font-weight: 700; letter-spacing: 1px; text-align: center; }
+        .cert-desc { margin-top: 10px; color: #94a3b8; font-size: 0.9rem; text-align: center; max-width: 80%; line-height: 1.5; }
+        
+        .nav-arrow { background: transparent; border: 1px solid var(--glass-border); color: white; padding: 10px 15px; border-radius: 50%; cursor: pointer; transition: 0.3s; font-size: 1.2rem; }
+        .nav-arrow:hover { background: var(--neon-blue); border-color: var(--neon-blue); color: black; }
+        
+        .magnify-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--neon-blue); color: var(--neon-blue); border-radius: 5px; width: 35px; height: 35px; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .magnify-btn:hover { background: var(--neon-blue); color: black; }
+        .magnify-btn-resume { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); border-radius: 5px; width: 30px; height: 30px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin-right: 15px; transition: 0.3s; }
+        .magnify-btn-resume:hover { background: var(--neon-purple); color: black; }
+
+        .fullscreen-modal { background: rgba(0, 0, 0, 0.95); flex-direction: column; }
+        #fsImage { max-width: 95vw; max-height: 80vh; object-fit: contain; border: 1px solid var(--glass-border); box-shadow: 0 0 50px rgba(6, 182, 212, 0.1); }
+        .fs-close { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; z-index: 3000; }
+        .fs-desc { margin-top: 20px; color: #94a3b8; font-size: 1rem; max-width: 800px; text-align: center; line-height: 1.6; }
+        .fs-caption { color: var(--neon-blue); font-weight: 700; font-size: 1.5rem; margin-top: 20px; letter-spacing: 1px; text-align: center; }
+
         .resume-body { padding: 40px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; }
         .resume-section { margin-bottom: 30px; }
         .resume-title { color: var(--neon-blue); font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; margin-bottom: 15px; letter-spacing: 1px; }
@@ -123,12 +218,55 @@
         .modal-content::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
 
         @media (max-width: 900px) {
-            nav { padding: 15px 20px; } .hero-main { flex-direction: column; gap: 20px; }
+            nav { padding: 10px 15px; } 
+            .nav-logo { font-size: 1rem; }
+            .nav-actions { gap: 10px; }
+            .roll-btn-container { width: 35px; height: 35px; }
+            .hire-btn { padding: 8px 15px; font-size: 0.8rem; }
+            .hero-main { flex-direction: column; gap: 15px; }
             .divider { width: 150px; height: 1px; background: linear-gradient(to right, transparent, white, transparent); }
             .name-group, .role-left, .name, .role-right { text-align: center; }
             .about-card { grid-template-areas: "info" "skills" "contact"; grid-template-columns: 1fr; padding: 30px; gap: 30px; }
             .contact-footer { flex-direction: column; gap: 20px; } .btn-group { flex-direction: column; }
             .resume-body { padding: 20px; }
+            .image-wrapper { min-height: 300px; }
+            .image-wrapper img { max-height: 250px; }
+            
+            .rotate-mobile {
+                transform: rotate(90deg);
+                width: 70vh !important;
+                height: 90vw !important;
+                max-width: none !important;
+                max-height: none !important;
+                object-fit: contain;
+            }
+        }
+
+        .site-footer {
+            display: flex; justify-content: center; align-items: center; gap: 30px;
+            padding: 20px 0 30px 0; width: 100%;
+            color: rgba(255, 255, 255, 0.3); font-size: 0.75rem;
+            position: relative; z-index: 10; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .site-footer span { transition: color 0.3s ease; cursor: default; }
+        .site-footer span:hover { color: var(--neon-blue); }
+
+        .intel-btn {
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            color: var(--neon-green); font-weight: 700; font-family: 'JetBrains Mono', monospace;
+            background: rgba(34, 197, 94, 0.05); padding: 8px 15px;
+            border-radius: 5px; border: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease; letter-spacing: 1px;
+        }
+        .intel-btn:hover {
+            background: rgba(34, 197, 94, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+        .blinking-cursor {
+            display: inline-block; width: 6px; height: 12px; background: var(--neon-green);
+            animation: blink 1s infinite;
         }
     </style>
 </head>
@@ -136,7 +274,13 @@
 
     <nav>
         <div class="nav-logo">MZK.ARCHITECT</div>
-        <a href="#contact-section" class="hire-btn" id="hireBtnNav">Hire Me</a>
+        
+        <div class="nav-actions">
+            <div class="roll-btn-container" id="rollBtn" title="Spin the world :D (10s Cooldown)">
+                <img src="image_1117dd.png" alt="Spin" class="spin-wheel-img">
+            </div>
+            <a href="#contact-section" class="hire-btn" id="hireBtnNav">Hire Me</a>
+        </div>
     </nav>
 
     <div class="fixed-bg">
@@ -148,7 +292,8 @@
 
     <section class="hero-container">
         <div class="hero-content" id="hero3D">
-            <div class="header-tag">Azure | Microsoft Expert</div>
+            <div class="header-tag"><span id="type-text">Azure | Microsoft Expert</span><span class="cursor"></span></div>
+            
             <div class="hero-main">
                 <div class="role-left">Architect</div>
                 <div class="divider"></div>
@@ -162,6 +307,7 @@
                 <div class="btn-group">
                     <a href="#about" class="btn-outline" id="viewExpertiseBtn">View Expertise</a>
                     <a href="#" class="btn-resume" id="openResumeBtn">Show Resume</a>
+                    <a href="#" class="btn-outline" id="openCertBtn">Certificates / R&R</a>
                 </div>
                 
                 <a href="https://www.linkedin.com/in/mohammed-zahid-khan-895a8b394" target="_blank" class="social-btn">
@@ -202,8 +348,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span style="font-weight:700; color:white;">RESUME PREVIEW</span>
-                <a href="MOHD ZAHID KHAN CLOUD ARCHITECT 2026 CV.pdf" download class="btn-download">DOWNLOAD PDF</a>
-                <span class="close-btn" id="closeResume">&times;</span>
+                <div style="display:flex; align-items:center;">
+                    <button class="magnify-btn-resume" id="magnifyResume">⤢</button>
+                    <a href="MOHD ZAHID KHAN CLOUD ARCHITECT 2026 CV.pdf" download class="btn-download">DOWNLOAD PDF</a>
+                    <span class="close-btn" id="closeResume" style="margin-left:15px;">&times;</span>
+                </div>
             </div>
             <div class="resume-body">
                 <div style="text-align:center; margin-bottom:30px;">
@@ -277,9 +426,368 @@
         </div>
     </div>
 
+    <div id="certModal" class="modal">
+        <div class="modal-content cert-content">
+            <div class="modal-header">
+                <span style="font-weight:700; color:white;">CERTIFICATES & AWARDS</span>
+                <span class="close-btn" id="closeCert">&times;</span>
+            </div>
+            <div class="gallery-container">
+                <button class="nav-arrow" id="prevCert">&#10094;</button>
+                <div class="image-wrapper">
+                    <button class="magnify-btn" id="magnifyCert">⤢</button>
+                    
+                    <img src="" id="mainCertImage" alt="Certificate">
+                    <div class="cert-caption" id="certCaption">Caption</div>
+                    <div class="cert-desc" id="certDesc">Description</div>
+                </div>
+                <button class="nav-arrow" id="nextCert">&#10095;</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullscreenModal" class="modal fullscreen-modal">
+        <span class="close-btn fs-close" id="closeFullscreen">&times;</span>
+        
+        <img src="" id="fsImage" style="display:none;">
+        <div class="fs-caption" id="fsCaption" style="display:none;"></div>
+        <div class="fs-desc" id="fsDesc" style="display:none;"></div>
+
+        <iframe id="fsPdf" style="display:none; width:90%; height:90vh; border:none;"></iframe>
+    </div>
+
+    <div id="intelModal" class="modal">
+        <div class="modal-content visitor-content">
+            <div class="visitor-header">
+                <span class="visitor-title">> SYSTEM DIAGNOSTICS</span>
+                <span class="close-btn" id="closeIntel" style="font-size:24px;">&times;</span>
+            </div>
+            <div class="visitor-body">
+                <div class="data-row">
+                    <span class="data-label">PUBLIC IP</span>
+                    <span class="data-value status-active" id="real-ip">SCANNING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">DEVICE TYPE</span>
+                    <span class="data-value" id="real-device">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">OS PLATFORM</span>
+                    <span class="data-value" id="real-os">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">SCREEN RESOLUTION</span>
+                    <span class="data-value" id="real-res">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">ACTIVE TIME</span>
+                    <span class="data-value" id="real-time">00:00</span>
+                </div>
+                <div class="data-row" style="border:none;">
+                    <span class="data-label">CONNECTION TYPE</span>
+                    <span class="data-value" id="real-conn" style="color:var(--neon-blue);">---</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="intel-btn" id="intelBtn">
+            [ SYSTEM.INTEL ] <span class="blinking-cursor"></span>
+        </div>
+        <span>version 1.0.1</span>
+        <span>MZK™</span>
+    </footer>
+
     <script>
         const isMobile = window.matchMedia("(max-width: 900px)").matches;
         let lastStarTime = 0;
+        
+        const pageLoadTime = Date.now();
+        let ipAddress = "HIDDEN";
+
+        const typingElement = document.getElementById('type-text');
+        const cursorElement = document.querySelector('.cursor');
+        const phrases = ["Azure Architect", "Cloud Security", "Microsoft Expert", "DevOps Engineer"];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeTimeout;
+
+        function typeEffect() {
+            const onMobile = window.matchMedia("(max-width: 900px)").matches;
+            if (!onMobile) {
+                typingElement.textContent = "Azure | Microsoft Expert";
+                cursorElement.style.display = 'none';
+                return; 
+            }
+            cursorElement.style.display = 'inline-block';
+            const currentPhrase = phrases[phraseIndex];
+
+            if (isDeleting) {
+                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 100 : 200;
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 3000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 1000;
+            }
+            typeTimeout = setTimeout(typeEffect, typeSpeed);
+        }
+        typeEffect();
+        window.addEventListener('resize', () => {
+            clearTimeout(typeTimeout);
+            typeEffect();
+        });
+
+        function lockScroll() {
+            document.body.style.overflow = 'hidden';
+        }
+        function unlockScroll() {
+            document.body.style.overflow = '';
+        }
+
+        const rollBtn = document.getElementById('rollBtn');
+        const heroContent = document.getElementById('hero3D');
+        let isRolling = false; 
+        
+        function initMeteors() {
+            setInterval(() => {
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                meteor.style.left = Math.random() * 100 + 'vw';
+                meteor.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(meteor);
+                setTimeout(() => meteor.remove(), 4000);
+            }, 1500); 
+        }
+        initMeteors();
+
+        rollBtn.addEventListener('click', () => {
+            if(isRolling) return;
+            isRolling = true;
+            
+            rollBtn.classList.add('disabled');
+            
+            heroContent.classList.add('barrel-roll');
+
+            let spinInterval = setInterval(() => {
+                if(!isRolling) { clearInterval(spinInterval); return; }
+                const rect = heroContent.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                createStar(cx + (Math.random() - 0.5) * 300, cy + (Math.random() - 0.5) * 100);
+            }, 50); 
+
+            setTimeout(() => {
+                heroContent.classList.remove('barrel-roll');
+                isRolling = false;
+                clearInterval(spinInterval);
+            }, 2500);
+
+            setTimeout(() => {
+                rollBtn.classList.remove('disabled');
+            }, 10000);
+        });
+
+        const intelBtn = document.getElementById('intelBtn');
+        const intelModal = document.getElementById('intelModal');
+        const closeIntel = document.getElementById('closeIntel');
+
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => { ipAddress = data.ip; })
+            .catch(error => { ipAddress = "UNAVAILABLE"; });
+
+        intelBtn.addEventListener('click', () => {
+            lockScroll();
+            
+            document.getElementById('real-ip').innerText = ipAddress;
+
+            const ua = navigator.userAgent;
+            let device = "Desktop";
+            if (/Mobi|Android/i.test(ua)) device = "Mobile Device";
+            
+            let os = "Unknown OS";
+            if (ua.indexOf("Win") != -1) os = "Windows";
+            if (ua.indexOf("Mac") != -1) os = "MacOS";
+            if (ua.indexOf("Linux") != -1) os = "Linux";
+            if (ua.indexOf("Android") != -1) os = "Android";
+            if (ua.indexOf("like Mac") != -1) os = "iOS";
+
+            document.getElementById('real-device').innerText = device;
+            document.getElementById('real-os').innerText = os;
+
+            document.getElementById('real-res').innerText = `${window.screen.width} x ${window.screen.height}`;
+
+            const now = Date.now();
+            const diff = Math.floor((now - pageLoadTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            document.getElementById('real-time').innerText = `${minutes}m ${seconds}s`;
+
+            let conn = "Unknown";
+            if (navigator.connection) {
+                conn = navigator.connection.effectiveType ? navigator.connection.effectiveType.toUpperCase() : "WIFI/LAN";
+            }
+            document.getElementById('real-conn').innerText = conn;
+
+            intelModal.style.display = 'flex';
+        });
+
+        closeIntel.onclick = () => {
+            intelModal.style.display = 'none';
+            unlockScroll();
+        }
+
+        const certModal = document.getElementById('certModal');
+        const openCertBtn = document.getElementById('openCertBtn');
+        const closeCert = document.getElementById('closeCert');
+        const mainCertImage = document.getElementById('mainCertImage');
+        const certCaption = document.getElementById('certCaption');
+        const certDesc = document.getElementById('certDesc');
+        const prevCert = document.getElementById('prevCert');
+        const nextCert = document.getElementById('nextCert');
+        
+        const fullscreenModal = document.getElementById('fullscreenModal');
+        const magnifyBtn = document.getElementById('magnifyCert');
+        const closeFullscreen = document.getElementById('closeFullscreen');
+        const fsImage = document.getElementById('fsImage');
+        const fsCaption = document.getElementById('fsCaption');
+        const fsDesc = document.getElementById('fsDesc');
+        const fsPdf = document.getElementById('fsPdf');
+
+        const certificates = [
+            { 
+                src: "AZ-104.jpg", 
+                caption: "Microsoft Azure Administrator Associate",
+                description: "Validates technical expertise in managing Azure identities, governance, storage, compute, and virtual networks in a cloud environment."
+            },
+            { 
+                src: "AZ-900.jpg", 
+                caption: "Microsoft Azure Fundamentals",
+                description: "Demonstrates foundational knowledge of cloud concepts, Azure services, workloads, security, privacy, pricing, and support."
+            },
+            { 
+                src: "AttariClasses.jpg", 
+                caption: "Certification Completed from Attari Classes",
+                description: "Comprehensive training certification covering advanced cloud architecture, network security, and hybrid cloud management scenarios."
+            },
+            { 
+                src: "award_cfo_primary.jpg", 
+                caption: "Received award from the CFO of CTM (corporate travel management) a partnered client company of WNS",
+                description: "Awarded for implementing innovative automation scripts that reduced work time by 50% and improved system reliability and efficieny."
+            },
+            { 
+                src: "award_cfo.jpg", 
+                caption: "Recognized by the CFO of CTM (Chris Montgomery)",
+                description: "Recognized for outstanding performance, leadership in cross-functional teams, and dedication to delivering high-quality cloud solutions."
+            }
+        ];
+
+        let currentCertIndex = 0;
+
+        function updateGallery() {
+            mainCertImage.src = certificates[currentCertIndex].src;
+            certCaption.innerText = certificates[currentCertIndex].caption;
+            certDesc.innerText = certificates[currentCertIndex].description;
+        }
+
+        openCertBtn.onclick = (e) => {
+            e.preventDefault();
+            certModal.style.display = 'flex';
+            lockScroll();
+            updateGallery();
+        }
+
+        closeCert.onclick = () => {
+            certModal.style.display = 'none';
+            unlockScroll();
+        }
+
+        nextCert.onclick = () => {
+            currentCertIndex = (currentCertIndex + 1) % certificates.length;
+            updateGallery();
+        }
+
+        prevCert.onclick = () => {
+            currentCertIndex = (currentCertIndex - 1 + certificates.length) % certificates.length;
+            updateGallery();
+        }
+
+        magnifyBtn.onclick = () => {
+            fsImage.style.display = "block";
+            fsCaption.style.display = "block";
+            fsDesc.style.display = "block";
+            fsPdf.style.display = "none";
+
+            fsImage.src = certificates[currentCertIndex].src;
+            fsCaption.innerText = certificates[currentCertIndex].caption;
+            fsDesc.innerText = certificates[currentCertIndex].description;
+            
+            fsImage.onload = function() {
+                if (window.matchMedia("(max-width: 900px)").matches) {
+                    if (this.naturalWidth > this.naturalHeight) {
+                        this.classList.add('rotate-mobile');
+                        fsCaption.style.display = "none";
+                        fsDesc.style.display = "none";
+                    } else {
+                        this.classList.remove('rotate-mobile');
+                        fsCaption.style.display = "block";
+                        fsDesc.style.display = "block";
+                    }
+                }
+            }
+            
+            fullscreenModal.style.display = 'flex';
+        }
+
+        document.getElementById('magnifyResume').onclick = () => {
+            fsImage.style.display = "none";
+            fsCaption.style.display = "none";
+            fsDesc.style.display = "none";
+            fsPdf.style.display = "block";
+
+            fsPdf.src = "MOHD ZAHID KHAN CLOUD ARCHITECT 2026 CV.pdf";
+            
+            fullscreenModal.style.display = 'flex';
+        }
+
+        closeFullscreen.onclick = () => {
+            fullscreenModal.style.display = 'none';
+            fsPdf.src = "";
+            fsImage.classList.remove('rotate-mobile');
+        }
+
+        const modal = document.getElementById("resumeModal");
+        const btn = document.getElementById("openResumeBtn");
+        const span = document.getElementById("closeResume");
+
+        btn.onclick = function(e) {
+            e.preventDefault();
+            modal.style.display = "flex";
+            lockScroll();
+        }
+        span.onclick = function() {
+            modal.style.display = "none";
+            unlockScroll();
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) { modal.style.display = "none"; unlockScroll(); }
+            if (event.target == intelModal) { intelModal.style.display = "none"; unlockScroll(); }
+            if (event.target == certModal) { certModal.style.display = "none"; unlockScroll(); }
+        }
 
         function createStar(x, y) {
             const star = document.createElement('div');
@@ -339,7 +847,7 @@
 
         const hero = document.getElementById('hero3D');
         function handleTilt(e) {
-            if(!hero) return;
+            if(!hero || isRolling) return;
             const x = (window.innerWidth / 2 - e.clientX) / 30;
             const y = (window.innerHeight / 2 - e.clientY) / 30;
             hero.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
@@ -364,23 +872,6 @@
         document.getElementById('viewExpertiseBtn').addEventListener('click', function() {
             triggerGlow('aboutCard', 'highlight-glow');
         });
-
-        const modal = document.getElementById("resumeModal");
-        const btn = document.getElementById("openResumeBtn");
-        const span = document.getElementById("closeResume");
-
-        btn.onclick = function(e) {
-            e.preventDefault();
-            modal.style.display = "flex";
-        }
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
     </script>
 </body>
 </html>
