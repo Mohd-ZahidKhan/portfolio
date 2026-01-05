@@ -5,7 +5,10 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["get", "post"]
+      "methods": [
+        "get",
+        "post"
+      ]
     },
     {
       "type": "http",
@@ -17,7 +20,7 @@
       "direction": "in",
       "name": "counterDoc",
       "databaseName": "PortfolioDB",
-      "collectionName": "VisitorStats",  <-- CHANGED THIS
+      "collectionName": "VisitorStats",
       "connectionStringSetting": "CosmosDbConnectionString",
       "id": "main-counter",
       "partitionKey": "main-counter"
@@ -27,7 +30,7 @@
       "direction": "out",
       "name": "updatedDoc",
       "databaseName": "PortfolioDB",
-      "collectionName": "VisitorStats",  <-- CHANGED THIS
+      "collectionName": "VisitorStats",
       "connectionStringSetting": "CosmosDbConnectionString",
       "createIfNotExists": false
     }
