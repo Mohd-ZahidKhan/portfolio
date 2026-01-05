@@ -581,7 +581,7 @@
         <div class="intel-btn" id="intelBtn">
             [ SYSTEM.INTEL ] <span class="blinking-cursor"></span>
         </div>
-        <span>version 1.0.7</span>
+        <span>version 1.0.8</span>
         <span>MZK™</span>
     </footer>
 
@@ -728,43 +728,32 @@
         intelBtn.addEventListener('click', () => {
             lockScroll();
             
-            document.getElementById('real-ip').innerText = ipAddress;
+            document.getElementById('real-ip').innerText = ipAddress; 
 
-            const ua = navigator.userAgent;
-            let device = "Desktop";
-            if (/Mobi|Android/i.test(ua)) device = "Mobile Device";
-            
-            let os = "Unknown OS";
-            if (ua.indexOf("Win") != -1) os = "Windows";
-            if (ua.indexOf("Mac") != -1) os = "MacOS";
-            if (ua.indexOf("Linux") != -1) os = "Linux";
-            if (ua.indexOf("Android") != -1) os = "Android";
-            if (ua.indexOf("like Mac") != -1) os = "iOS";
-
-            document.getElementById('real-device').innerText = device;
-            document.getElementById('real-os').innerText = os;
-
-            document.getElementById('real-res').innerText = `${window.screen.width} x ${window.screen.height}`;
-
-            const now = Date.now();
-            const diff = Math.floor((now - pageLoadTime) / 1000);
-            const minutes = Math.floor(diff / 60);
-            const seconds = diff % 60;
-            document.getElementById('real-time').innerText = `${minutes}m ${seconds}s`;
-
-            let conn = "Unknown";
-            if (navigator.connection) {
-                conn = navigator.connection.effectiveType ? navigator.connection.effectiveType.toUpperCase() : "WIFI/LAN";
-            }
-            document.getElementById('real-conn').innerText = conn;
-
+            const connLabel = document.getElementById('real-conn');
+            connLabel.innerText = "CONNECTING TO AZURE DB...";
+            connLabel.style.color = "yellow";
+            // Call the Secure API 
+            fetch('/api/GetVisitorCount')
+                .then(response => response.json())
+                .then(data => {
+                    connLabel.innerText = "AZURE DB CONNECTED";
+                    connLabel.style.color = "var(--neon-green)";
+                    
+                    // Optional: You can display the count in the modal if you want
+                    // For now, we will log it to console so you can see it works
+                    console.log("Visitor Number:", data.count);
+                    
+                    // Append count to the 'ACTIVE TIME' row just to see it
+                    document.getElementById('real-time').innerText += ` | Visits: ${data.count}`;
+                })
+                .catch(err => {
+                    console.error(err);
+                    connLabel.innerText = "DB CONNECTION FAILED";
+                    connLabel.style.color = "red";
+                });
             intelModal.style.display = 'flex';
         });
-
-        closeIntel.onclick = () => {
-            intelModal.style.display = 'none';
-            unlockScroll();
-        }
 
         const certModal = document.getElementById('certModal');
         const openCertBtn = document.getElementById('openCertBtn');

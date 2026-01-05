@@ -1,0 +1,35 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get", "post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "counterDoc",
+      "databaseName": "PortfolioDB",
+      "containerName": "VisitorStats",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "id": "main-counter",
+      "partitionKey": "main-counter"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "updatedDoc",
+      "databaseName": "PortfolioDB",
+      "containerName": "VisitorStats",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "createIfNotExists": false
+    }
+  ]
+}
