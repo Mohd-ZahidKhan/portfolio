@@ -17,7 +17,7 @@
       "direction": "in",
       "name": "counterDoc",
       "databaseName": "PortfolioDB",
-      "containerName": "VisitorStats",
+      "collectionName": "VisitorStats",  <-- CHANGED THIS
       "connectionStringSetting": "CosmosDbConnectionString",
       "id": "main-counter",
       "partitionKey": "main-counter"
@@ -27,7 +27,7 @@
       "direction": "out",
       "name": "updatedDoc",
       "databaseName": "PortfolioDB",
-      "containerName": "VisitorStats",
+      "collectionName": "VisitorStats",  <-- CHANGED THIS
       "connectionStringSetting": "CosmosDbConnectionString",
       "createIfNotExists": false
     }
