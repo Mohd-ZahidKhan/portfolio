@@ -720,55 +720,64 @@
         const intelModal = document.getElementById('intelModal');
         const closeIntel = document.getElementById('closeIntel');
 
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => { ipAddress = data.ip; })
-            .catch(error => { ipAddress = "UNAVAILABLE"; });
-
         intelBtn.addEventListener('click', () => {
             lockScroll();
             
-            document.getElementById('real-ip').innerText = ipAddress; 
+            const ua = navigator.userAgent;
+            let device = "Desktop";
+            if (/Mobi|Android/i.test(ua)) device = "Mobile Device";
+            
+            let os = "Unknown OS";
+            if (ua.indexOf("Win") != -1) os = "Windows";
+            if (ua.indexOf("Mac") != -1) os = "MacOS";
+            if (ua.indexOf("Linux") != -1) os = "Linux";
+            if (ua.indexOf("Android") != -1) os = "Android";
+            if (ua.indexOf("like Mac") != -1) os = "iOS";
+
+            document.getElementById('real-ip').innerText = ipAddress;
+            document.getElementById('real-device').innerText = device;
+            document.getElementById('real-os').innerText = os;
+            document.getElementById('real-res').innerText = `${window.screen.width} x ${window.screen.height}`;
+
+            const now = Date.now();
+            const diff = Math.floor((now - pageLoadTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            const timeLabel = document.getElementById('real-time');
+            timeLabel.innerText = `${minutes}m ${seconds}s`;
 
             const connLabel = document.getElementById('real-conn');
-            const timeLabel = document.getElementById('real-time');
-            
-            connLabel.innerText = "CONNECTING TO AZURE DB...";
+            connLabel.innerText = "CONNECTING TO AZURE...";
             connLabel.style.color = "yellow";
 
-            // Call the Secure API 
             fetch('/api/GetVisitorCount')
                 .then(response => {
-                    if (!response.ok) throw new Error("API not found or error");
+                    if (!response.ok) throw new Error("API not found");
                     return response.json();
                 })
                 .then(data => {
-                    // SUCCESS: Connected to Real DB
                     connLabel.innerText = "AZURE DB CONNECTED";
                     connLabel.style.color = "var(--neon-green)";
-                    console.log("Visitor Number:", data.count);
                     
+                    // Prevent duplicate "Visits" text if clicked multiple times
                     if(!timeLabel.innerText.includes("Visits")) {
                         timeLabel.innerText += ` | Visits: ${data.count}`;
                     }
                 })
                 .catch(err => {
-                    console.warn("Running in Offline/Local Mode:", err);
-                    
-                    // FALLBACK: Simulate success so the site looks good locally
-                    // This makes sure 'Connection Failed' doesn't ruin the vibe
-                    setTimeout(() => {
-                        connLabel.innerText = "DEMO LINK ESTABLISHED";
-                        connLabel.style.color = "var(--neon-blue)"; 
-                        if(!timeLabel.innerText.includes("Visits")) {
-                            timeLabel.innerText += ` | Visits: (Demo) 101`;
-                        }
-                    }, 1000);
+                    console.warn("Offline/Local Mode active");
+                    // Fallback for local testing so site doesn't look broken
+                    connLabel.innerText = "DEMO MODE (LOCAL)";
+                    connLabel.style.color = "var(--neon-blue)";
                 });
 
             intelModal.style.display = 'flex';
         });
 
+        closeIntel.onclick = () => {
+            intelModal.style.display = 'none';
+            unlockScroll();
+        }
         const certModal = document.getElementById('certModal');
         const openCertBtn = document.getElementById('openCertBtn');
         const closeCert = document.getElementById('closeCert');
