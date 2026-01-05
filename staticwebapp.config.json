@@ -1,6 +1,9 @@
 {
+  "networking": {
+    "allowedIpRanges": []
+  },
   "globalHeaders": {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://mohd-zahidkhan.github.io",
     "Access-Control-Allow-Methods": "GET, OPTIONS"
   }
 }
