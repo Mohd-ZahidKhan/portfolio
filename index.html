@@ -750,7 +750,8 @@
             connLabel.innerText = "CONNECTING TO AZURE...";
             connLabel.style.color = "yellow";
 
-            fetch('/api/GetVisitorCount')
+            // REPLACE with your actual Azure URL
+                fetch('https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetVisitorCount')
                 .then(response => {
                     if (!response.ok) throw new Error("API not found");
                     return response.json();
