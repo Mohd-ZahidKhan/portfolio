@@ -589,59 +589,85 @@
         const isMobile = window.matchMedia("(max-width: 900px)").matches;
         let lastStarTime = 0;
         
+        // --- GLOBAL VARIABLES FOR DATA ---
         const pageLoadTime = Date.now();
-        let ipAddress = "HIDDEN";
+        let globalIP = "SCANNING...";
+        let globalCount = "---";
+        let dbStatus = "CONNECTING...";
+        let dbColor = "yellow";
 
         const typingElement = document.getElementById('type-text');
         const cursorElement = document.querySelector('.cursor');
-        
-        // --- NEW: Select the parent tag for the underline ---
         const headerTag = document.querySelector('.header-tag');
         
-        const phrases = ["Azure Architect", "Cloud Security", "Microsoft Expert", "Financial Expert"];
+        // --- 1. IMMEDIATE DATA FETCH (ON PAGE LOAD) ---
         
-        // --- DEFINE NEON COLORS ---
-        const neonColors = [
-            "#06b6d4", // neon-blue
-            "#d946ef", // neon-purple
-            "#22c55e"  // neon-green
-        ];
+        // A. Fetch IP Address
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => { 
+                globalIP = data.ip; 
+                // If modal is open, update it live
+                const ipEl = document.getElementById('real-ip');
+                if(ipEl) ipEl.innerText = globalIP;
+            })
+            .catch(error => { globalIP = "UNAVAILABLE"; });
 
+        // B. Fetch Visitor Count from Azure (Auto-Log)
+        // REPLACE THIS URL with your actual Azure Static Web App URL
+        const AZURE_URL = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetVisitorCount";
+
+        fetch(AZURE_URL)
+            .then(response => {
+                if (!response.ok) throw new Error("API not found");
+                return response.json();
+            })
+            .then(data => {
+                globalCount = data.count;
+                dbStatus = "AZURE DB CONNECTED";
+                dbColor = "var(--neon-green)";
+                
+                // Update specific elements if they exist
+                const connLabel = document.getElementById('real-conn');
+                if(connLabel) {
+                    connLabel.innerText = dbStatus;
+                    connLabel.style.color = dbColor;
+                }
+            })
+            .catch(err => {
+                console.warn("Offline/Local Mode active");
+                dbStatus = "DEMO MODE (LOCAL)";
+                dbColor = "var(--neon-blue)";
+                globalCount = "101 (Demo)";
+            });
+
+        // --- VISUAL EFFECTS LOGIC ---
+        const phrases = ["Azure Architect", "Cloud Security", "Microsoft Expert", "Financial Expert"];
+        const neonColors = ["#06b6d4", "#d946ef", "#22c55e"];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
         let typeTimeout;
 
-        // --- NEW: Function to change color of Text, Cursor AND Underline ---
         function changeColor() {
             const randomColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-            
-            // 1. Text & Shadow
             typingElement.style.color = randomColor;
             typingElement.style.textShadow = `0 0 10px ${randomColor}`;
-            
-            // 2. Cursor & Shadow
             cursorElement.style.backgroundColor = randomColor;
             cursorElement.style.boxShadow = `0 0 10px ${randomColor}`;
-            
-            // 3. Header Tag Underline (Border Bottom)
             headerTag.style.borderBottomColor = randomColor;
-            // Optional: subtle box shadow for the line itself
             headerTag.style.boxShadow = `0 4px 10px -5px ${randomColor}`;
         }
 
-        // Initialize first color
         changeColor();
 
         function typeEffect() {
             const onMobile = window.matchMedia("(max-width: 900px)").matches;
             if (!onMobile) {
-                // Remove this block if you want typing on desktop too
                 typingElement.textContent = "Azure | Microsoft Expert";
                 cursorElement.style.display = 'none';
                 return; 
             }
-            
             cursorElement.style.display = 'inline-block';
             const currentPhrase = phrases[phraseIndex];
 
@@ -656,18 +682,14 @@
             let typeSpeed = isDeleting ? 100 : 200;
 
             if (!isDeleting && charIndex === currentPhrase.length) {
-                typeSpeed = 3000; // Pause at end of word
+                typeSpeed = 3000; 
                 isDeleting = true;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
-                
-                // --- UPDATE COLOR HERE: BEFORE NEXT LOOP STARTS ---
                 changeColor();
-                
                 typeSpeed = 1000;
             }
-
             typeTimeout = setTimeout(typeEffect, typeSpeed);
         }
 
@@ -678,12 +700,8 @@
             typeEffect();
         });
 
-        function lockScroll() {
-            document.body.style.overflow = 'hidden';
-        }
-        function unlockScroll() {
-            document.body.style.overflow = '';
-        }
+        function lockScroll() { document.body.style.overflow = 'hidden'; }
+        function unlockScroll() { document.body.style.overflow = ''; }
 
         const rollBtn = document.getElementById('rollBtn');
         const heroContent = document.getElementById('hero3D');
@@ -692,9 +710,7 @@
         rollBtn.addEventListener('click', () => {
             if(isRolling) return;
             isRolling = true;
-            
             rollBtn.classList.add('disabled');
-            
             heroContent.classList.add('barrel-roll');
 
             let spinInterval = setInterval(() => {
@@ -716,6 +732,7 @@
             }, 10000);
         });
 
+        // --- INTEL MODAL LOGIC (UPDATED) ---
         const intelBtn = document.getElementById('intelBtn');
         const intelModal = document.getElementById('intelModal');
         const closeIntel = document.getElementById('closeIntel');
@@ -723,6 +740,7 @@
         intelBtn.addEventListener('click', () => {
             lockScroll();
             
+            // 1. Device Detection (Runs on click for accuracy)
             const ua = navigator.userAgent;
             let device = "Desktop";
             if (/Mobi|Android/i.test(ua)) device = "Mobile Device";
@@ -734,43 +752,29 @@
             if (ua.indexOf("Android") != -1) os = "Android";
             if (ua.indexOf("like Mac") != -1) os = "iOS";
 
-            document.getElementById('real-ip').innerText = ipAddress;
+            // 2. Populate Modal with GLOBAL variables (Fetched on load)
+            document.getElementById('real-ip').innerText = globalIP;
             document.getElementById('real-device').innerText = device;
             document.getElementById('real-os').innerText = os;
             document.getElementById('real-res').innerText = `${window.screen.width} x ${window.screen.height}`;
 
+            // 3. Update Time
             const now = Date.now();
             const diff = Math.floor((now - pageLoadTime) / 1000);
             const minutes = Math.floor(diff / 60);
             const seconds = diff % 60;
             const timeLabel = document.getElementById('real-time');
+            
+            // Display Time + Visitor Count
             timeLabel.innerText = `${minutes}m ${seconds}s`;
+            if(globalCount !== "---") {
+                 timeLabel.innerText += ` | Visits: ${globalCount}`;
+            }
 
+            // 4. Update Status Colors
             const connLabel = document.getElementById('real-conn');
-            connLabel.innerText = "CONNECTING TO AZURE...";
-            connLabel.style.color = "yellow";
-
-            // REPLACE with your actual Azure URL
-                fetch('https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetVisitorCount')
-                .then(response => {
-                    if (!response.ok) throw new Error("API not found");
-                    return response.json();
-                })
-                .then(data => {
-                    connLabel.innerText = "AZURE DB CONNECTED";
-                    connLabel.style.color = "var(--neon-green)";
-                    
-                    // Prevent duplicate "Visits" text if clicked multiple times
-                    if(!timeLabel.innerText.includes("Visits")) {
-                        timeLabel.innerText += ` | Visits: ${data.count}`;
-                    }
-                })
-                .catch(err => {
-                    console.warn("Offline/Local Mode active");
-                    // Fallback for local testing so site doesn't look broken
-                    connLabel.innerText = "DEMO MODE (LOCAL)";
-                    connLabel.style.color = "var(--neon-blue)";
-                });
+            connLabel.innerText = dbStatus;
+            connLabel.style.color = dbColor;
 
             intelModal.style.display = 'flex';
         });
@@ -779,6 +783,7 @@
             intelModal.style.display = 'none';
             unlockScroll();
         }
+
         const certModal = document.getElementById('certModal');
         const openCertBtn = document.getElementById('openCertBtn');
         const closeCert = document.getElementById('closeCert');
