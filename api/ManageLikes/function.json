@@ -14,16 +14,6 @@
     },
     {
       "type": "cosmosDB",
-      "direction": "in",
-      "name": "trackerDoc",
-      "databaseName": "PortfolioDB",
-      "collectionName": "LikeTracker",
-      "connectionStringSetting": "CosmosDbConnectionString",
-      "id": "{headers.x-forwarded-for}", 
-      "partitionKey": "{headers.x-forwarded-for}"
-    },
-    {
-      "type": "cosmosDB",
       "direction": "out",
       "name": "newTrackerDoc",
       "databaseName": "PortfolioDB",

@@ -2,5 +2,7 @@
   "name": "visitor-api",
   "version": "1.0.0",
   "description": "API for Portfolio",
-  "scripts": {}
+  "dependencies": {
+    "@azure/cosmos": "^3.17.3"
+  }
 }
