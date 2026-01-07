@@ -723,38 +723,51 @@
 
         const AZURE_LIKES_URL = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/ManageLikes";
         
-        const likeBtnWrapper = document.getElementById('likeBtn');
-        const likeCountLabel = document.getElementById('likeCountLabel');
-        let hasLiked = localStorage.getItem('hasLiked') === 'true';
-
-       
-        fetch(AZURE_LIKES_URL)
-            .then(res => res.json())
-            .then(data => {
-                likeCountLabel.innerText = data.likes || 0;
-            })
-            .catch(err => console.log("Likes unavailable locally"));
-
-        if (hasLiked) {
-            likeBtnWrapper.classList.add('liked');
-        }
-
-  
+       // --- UPDATED LIKE BUTTON LOGIC ---
         likeBtnWrapper.addEventListener('click', () => {
-            if (hasLiked) return; 
+            // SCENARIO 1: Browser remembers they liked
+            if (hasLiked) {
+                alert("You have already liked this portfolio!");
+                return; 
+            }
 
-            let current = parseInt(likeCountLabel.innerText) || 0;
-            likeCountLabel.innerText = current + 1;
+            // Optimistic Update (Update UI immediately for speed)
+            let previousCount = parseInt(likeCountLabel.innerText) || 0;
+            likeCountLabel.innerText = previousCount + 1;
             likeBtnWrapper.classList.add('liked');
-            hasLiked = true;
-            localStorage.setItem('hasLiked', 'true');
 
+            // Send request to Azure
             fetch(AZURE_LIKES_URL, { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    likeCountLabel.innerText = data.likes;
+                .then(async res => {
+                    // SCENARIO 2: Azure recognizes the IP and blocks it
+                    if (res.status === 403) {
+                        throw new Error("ALREADY_LIKED");
+                    }
+                    if (!res.ok) throw new Error("API Error");
+                    return res.json();
                 })
-                .catch(err => console.error("Like failed", err));
+                .then(data => {
+                    // Success: Update with confirmed count from DB
+                    likeCountLabel.innerText = data.likes;
+                    hasLiked = true;
+                    localStorage.setItem('hasLiked', 'true');
+                })
+                .catch(err => {
+                    if (err.message === "ALREADY_LIKED") {
+                        alert("You have already liked this portfolio! (Verified by Azure)");
+                        
+                        // Even though it failed, we mark them as liked locally 
+                        // so they don't try again
+                        hasLiked = true;
+                        localStorage.setItem('hasLiked', 'true');
+                    } else {
+                        // Genuine Error (Network fail, etc): Revert the UI
+                        console.error("Like failed", err);
+                        likeCountLabel.innerText = previousCount;
+                        likeBtnWrapper.classList.remove('liked');
+                        alert("Could not register like. Please try again.");
+                    }
+                });
         });
 
 

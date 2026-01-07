@@ -15,21 +15,40 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "counterDoc",
+      "name": "trackerDoc",
       "databaseName": "PortfolioDB",
-      "collectionName": "VisitorStats",
+      "collectionName": "LikeTracker",
       "connectionStringSetting": "CosmosDbConnectionString",
-      "id": "main-counter",
-      "partitionKey": "main-counter"
+      "id": "{headers.x-forwarded-for}", 
+      "partitionKey": "{headers.x-forwarded-for}"
     },
     {
       "type": "cosmosDB",
       "direction": "out",
-      "name": "updatedDoc",
+      "name": "newTrackerDoc",
+      "databaseName": "PortfolioDB",
+      "collectionName": "LikeTracker",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "createIfNotExists": true
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "counterDoc",
       "databaseName": "PortfolioDB",
       "collectionName": "VisitorStats",
       "connectionStringSetting": "CosmosDbConnectionString",
-      "createIfNotExists": false
+      "id": "likes-counter",
+      "partitionKey": "likes-counter"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "updatedCounterDoc",
+      "databaseName": "PortfolioDB",
+      "collectionName": "VisitorStats",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "createIfNotExists": true
     }
   ]
 }
