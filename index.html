@@ -668,7 +668,7 @@
         <div class="intel-btn" id="intelBtn">
             [ SYSTEM.INTEL ] <span class="blinking-cursor"></span>
         </div>
-        <span>version 1.1.1</span>
+        <span>version 1.1.2</span>
         <span>MZK™</span>
     </footer>
 
@@ -733,14 +733,21 @@
             likeBtnWrapper.classList.add('liked');
         }
         
-        // Fetch initial count
+        // --- FETCH INITIAL COUNT & STATUS ---
         fetch(AZURE_LIKES_URL)
             .then(res => res.json())
             .then(data => {
                 likeCountLabel.innerText = data.likes || 0;
+                
+                // CHECK: Does the server say we liked?
+                if (data.userHasLiked) {
+                    // YES: Turn Heart RED immediately
+                    likeBtnWrapper.classList.add('liked'); 
+                    hasLiked = true;
+                    localStorage.setItem('hasLiked', 'true'); // Sync local storage
+                }
             })
             .catch(err => console.log("Likes unavailable locally"));
-        // ------------------------------------------------
 
        // --- UPDATED LIKE BUTTON LOGIC ---
         likeBtnWrapper.addEventListener('click', () => {
