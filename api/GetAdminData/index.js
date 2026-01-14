@@ -1,4 +1,4 @@
-module.exports = async function (context, req, allRecords) {
+module.exports = async function (context, req, visitorDoc) {
     const ADMIN_SECRET = process.env.ADMIN_PASSWORD; 
     const userKey = req.query.key;
 
