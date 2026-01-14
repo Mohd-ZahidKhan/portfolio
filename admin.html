@@ -61,46 +61,31 @@
 
         if (!key) { statusEl.innerText = "Please enter a key."; return; }
 
-        statusEl.innerText = "Authenticating & Fetching Data...";
-        tbody.innerHTML = "";
+        statusEl.innerText = "Authenticating...";
+        tbody.innerHTML = ""; 
 
         try {
-
             const response = await fetch(`${API_BASE}?key=${key}`);
 
             if (response.status === 401) {
-                const errorData = await response.json
-                statusEl.innerText = errorData.message;
+              
+                const errorData = await response.json(); 
+               
+                statusEl.innerText = errorData.message; 
                 statusEl.style.color = "#ef4444";
                 return;
             }
-
+            
+            if (!response.ok) {
+                statusEl.innerText = "Server Error: " + response.status;
+                return;
+            }
+          
             const data = await response.json();
-            statusEl.innerText = `✅ Success: ${data.length} records found. Resolving ISPs...`;
+            statusEl.innerText = `✅ Success: ${data.length} records found.`;
             statusEl.style.color = "#22c55e";
             table.style.display = "table";
-
-
-            data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-
-            for (const item of data) {
-                const row = document.createElement('tr');
-                const dateStr = new Date(item.timestamp).toLocaleString();
-
-                const ispCellId = `isp-${item.ip.replace(/[^a-zA-Z0-9]/g, '')}`;
-
-                row.innerHTML = `
-                    <td>${dateStr}</td>
-                    <td style="color:white;">${item.ip}</td>
-                    <td id="${ispCellId}" class="isp-cell">Resolving...</td>
-                `;
-                tbody.appendChild(row);
-
             
-                lookupISP(item.ip, ispCellId);
-            }
-
         } catch (err) {
             console.error(err);
             statusEl.innerText = "Error: Could not connect to API.";
