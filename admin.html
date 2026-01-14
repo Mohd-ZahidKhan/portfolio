@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MZK Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Login Box */
+        .login-box { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 5px; font-family: inherit; width: 300px; }
+        button { background: #22c55e; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #4ade80; }
+
+        /* Data Table */
+        table { width: 100%; border-collapse: collapse; display: none; } /* Hidden by default */
+        th { text-align: left; color: #06b6d4; padding: 15px; border-bottom: 1px solid #334155; }
+        td { padding: 15px; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .status-msg { margin-top: 10px; color: #facc15; }
+        .isp-cell { color: #94a3b8; font-size: 0.85rem; }
+        .isp-highlight { color: #e879f9; } /* Highlights the ISP name */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="color:white;">> ADMIN.ACCESS_LOGS</h1>
+
+    <div class="login-box">
+        <input type="password" id="adminKey" placeholder="Enter Admin Key...">
+        <button onclick="fetchLogs()">UNLOCK DATA</button>
+    </div>
+    <div id="status" class="status-msg">Waiting for input...</div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>TIMESTAMP</th>
+                <th>IP ADDRESS</th>
+                <th>ISP & LOCATION</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    
+    const API_BASE = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetAdminData";
+
+    async function fetchLogs() {
+        const key = document.getElementById('adminKey').value;
+        const statusEl = document.getElementById('status');
+        const table = document.getElementById('dataTable');
+        const tbody = document.getElementById('tableBody');
+
+        if (!key) { statusEl.innerText = "Please enter a key."; return; }
+
+        statusEl.innerText = "Authenticating & Fetching Data...";
+        tbody.innerHTML = ""; // Clear old data
+
+        try {
+            // 1. Call Azure API with the Key
+            const response = await fetch(`${API_BASE}?key=${key}`);
+
+            if (response.status === 401) {
+                statusEl.innerText = "⛔ ACCESS DENIED: Invalid Key.";
+                statusEl.style.color = "#ef4444";
+                return;
+            }
+
+            const data = await response.json();
+            statusEl.innerText = `✅ Success: ${data.length} records found. Resolving ISPs...`;
+            statusEl.style.color = "#22c55e";
+            table.style.display = "table";
+
+            // Sort newest first
+            data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            // 2. Build the Table
+            for (const item of data) {
+                const row = document.createElement('tr');
+                const dateStr = new Date(item.timestamp).toLocaleString();
+                
+                // Unique ID for the ISP cell so we can update it later
+                const ispCellId = `isp-${item.ip.replace(/[^a-zA-Z0-9]/g, '')}`;
+
+                row.innerHTML = `
+                    <td>${dateStr}</td>
+                    <td style="color:white;">${item.ip}</td>
+                    <td id="${ispCellId}" class="isp-cell">Resolving...</td>
+                `;
+                tbody.appendChild(row);
+
+                // 3. Fetch ISP info (Async)
+                lookupISP(item.ip, ispCellId);
+            }
+
+        } catch (err) {
+            console.error(err);
+            statusEl.innerText = "Error: Could not connect to API.";
+        }
+    }
+
+    // Function to check ISP using free API
+    async function lookupISP(ip, elementId) {
+        try {
+            // Using ip-api.com (Free, non-SSL)
+            const res = await fetch(`http://ip-api.com/json/${ip}`);
+            const data = await res.json();
+            
+            const el = document.getElementById(elementId);
+            if (data.status === "success") {
+                el.innerHTML = `<span class="isp-highlight">${data.isp}</span> (${data.city}, ${data.country})`;
+            } else {
+                el.innerText = "Unknown / Private IP";
+            }
+        } catch (e) {
+            console.log("ISP lookup failed for", ip);
+        }
+    }
+</script>
+
+</body>
+</html>
