@@ -22,7 +22,7 @@ module.exports = async function (context, req, allRecords) {
         context.res = {
             status: 401, 
             headers: corsHeaders, 
-            body: { message: "⛔ Access Denied: Wrong Key" }
+            body: { message: "⛔ Access Denied: PLEASE LEAVE THE PAGE YOU'RE UNAUTHORIZED TO ACCESS BEYOND THIS!!" }
         };
         return;
     }

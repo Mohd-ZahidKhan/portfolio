@@ -69,7 +69,8 @@
             const response = await fetch(`${API_BASE}?key=${key}`);
 
             if (response.status === 401) {
-                statusEl.innerText = "⛔ ACCESS DENIED: Invalid Key.";
+                const errorData = await response.json
+                statusEl.innerText = errorData.message;
                 statusEl.style.color = "#ef4444";
                 return;
             }
