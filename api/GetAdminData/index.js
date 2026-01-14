@@ -27,10 +27,11 @@ module.exports = async function (context, req, allRecords) {
         return;
     }
 
-    
+    const ipList = visitorDoc ? visitorDoc.visitors : [];
+
     context.res = {
         status: 200,
         headers: corsHeaders,
-        body: allRecords
+        body: ipList
     };
 }

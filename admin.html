@@ -2,55 +2,191 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MZK Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>MZK Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #020617; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-    
-        .login-box { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 5px; font-family: inherit; width: 300px; }
-        button { background: #22c55e; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
-        button:hover { background: #4ade80; }
 
-    
-        table { width: 100%; border-collapse: collapse; display: none; } 
-        th { text-align: left; color: #06b6d4; padding: 15px; border-bottom: 1px solid #334155; }
-        td { padding: 15px; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
-        tr:hover { background: rgba(255,255,255,0.02); }
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #020617; 
+            color: #cbd5e1; 
+            font-family: 'JetBrains Mono', monospace; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        h1 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 15px;
+        }
+
+     
+        .login-wrapper {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            margin-bottom: 30px;
+        }
+
+        .login-box { 
+            display: flex; 
+            gap: 10px; 
+            align-items: center;
+        }
+
+       
+        .password-container {
+            position: relative;
+            flex-grow: 1; 
+            max-width: 400px;
+        }
+
+        input { 
+            background: #020617; 
+            border: 1px solid #475569; 
+            color: white; 
+            padding: 12px 45px 12px 15px;
+            border-radius: 5px; 
+            font-family: inherit; 
+            width: 100%;
+            font-size: 1rem;
+            outline: none;
+        }
+        input:focus { border-color: #22c55e; }
+
+      
+        .toggle-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        .toggle-btn:hover { color: white; }
+
+      
+        .unlock-btn { 
+            background: #22c55e; 
+            color: #000; 
+            border: none; 
+            padding: 12px 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            font-size: 1rem;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .unlock-btn:hover { background: #4ade80; }
+
+       
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            display: none; 
+            background: #0f172a;
+            min-width: 600px; 
+        }
         
-        .status-msg { margin-top: 10px; color: #facc15; }
-        .isp-cell { color: #94a3b8; font-size: 0.85rem; }
-        .isp-highlight { color: #e879f9; } 
+        th { text-align: left; color: #06b6d4; padding: 15px; background: #1e293b; }
+        td { padding: 15px; border-bottom: 1px solid #1e293b; font-size: 0.9rem; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        
+        .status-msg { margin-top: 15px; font-size: 0.9rem; }
+        .isp-cell { color: #94a3b8; }
+        .isp-highlight { color: #e879f9; font-weight: bold; }
+        .visitor-label { color: #94a3b8; font-style: italic; }
+
+        
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            
+        
+            .login-box { 
+                flex-direction: column; 
+                align-items: stretch;
+            }
+            
+            .password-container { max-width: 100%; }
+            .unlock-btn { width: 100%; }
+            
+            h1 { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 style="color:white;">> ADMIN.ACCESS_LOGS</h1>
+    <h1>> ADMIN.ACCESS_LOGS</h1>
 
-    <div class="login-box">
-        <input type="password" id="adminKey" placeholder="Enter Admin Key...">
-        <button onclick="fetchLogs()">UNLOCK DATA</button>
+    <div class="login-wrapper">
+        <div class="login-box">
+            <div class="password-container">
+                <input type="password" id="adminKey" placeholder="Enter Admin Key...">
+                <button class="toggle-btn" onclick="togglePassword()" title="Show Password">
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg id="eyeOffIcon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+            </div>
+            <button class="unlock-btn" onclick="fetchLogs()">UNLOCK DATA</button>
+        </div>
+        <div id="status" class="status-msg" style="color:#facc15;">Waiting for input...</div>
     </div>
-    <div id="status" class="status-msg">Waiting for input...</div>
 
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>TIMESTAMP</th>
-                <th>IP ADDRESS</th>
-                <th>ISP & LOCATION</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th width="20%">TYPE</th>
+                    <th width="25%">IP ADDRESS</th>
+                    <th>ISP & LOCATION</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
 
+    function togglePassword() {
+        const input = document.getElementById('adminKey');
+        const eye = document.getElementById('eyeIcon');
+        const eyeOff = document.getElementById('eyeOffIcon');
+        
+        if (input.type === "password") {
+            input.type = "text";
+            eye.style.display = "none";
+            eyeOff.style.display = "block";
+        } else {
+            input.type = "password";
+            eye.style.display = "block";
+            eyeOff.style.display = "none";
+        }
+    }
+
+  
     const API_BASE = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetAdminData";
 
     async function fetchLogs() {
@@ -62,15 +198,13 @@
         if (!key) { statusEl.innerText = "Please enter a key."; return; }
 
         statusEl.innerText = "Authenticating & Fetching Data...";
-        tbody.innerHTML = "";
+        tbody.innerHTML = ""; 
 
         try {
             const response = await fetch(`${API_BASE}?key=${key}`);
 
-           
             if (response.status === 401) {
                 const errorData = await response.json(); 
-         
                 statusEl.innerText = errorData.message; 
                 statusEl.style.color = "#ef4444"; 
                 return; 
@@ -81,42 +215,36 @@
                 return;
             }
 
-      
             const data = await response.json();
-            statusEl.innerText = `✅ Success: ${data.length} records found. Resolving ISPs...`;
+            
+            statusEl.innerText = `✅ Success: ${data.length} unique visitors found.`;
             statusEl.style.color = "#22c55e";
             table.style.display = "table";
 
-       
-            data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            for (const item of data) {
+            for (const ip of data) {
                 const row = document.createElement('tr');
-                const dateStr = new Date(item.timestamp).toLocaleString();
                 
-
-                let cleanIP = item.ip || "Unknown";
+                let cleanIP = ip || "Unknown";
                 if (cleanIP.includes(':')) {
                     cleanIP = cleanIP.split(':')[0];
                 }
                 
-                
-                const ispCellId = `isp-${cleanIP.replace(/[^a-zA-Z0-9]/g, '')}-${Math.floor(Math.random() * 1000)}`;
+                const ispCellId = `isp-${cleanIP.replace(/[^a-zA-Z0-9]/g, '')}-${Math.floor(Math.random() * 10000)}`;
 
                 row.innerHTML = `
-                    <td>${dateStr}</td>
-                    <td style="color:white;">${cleanIP}</td>
+                    <td class="visitor-label">Visitor Log</td>
+                    <td style="color:white; font-family:'JetBrains Mono'">${cleanIP}</td>
                     <td id="${ispCellId}" class="isp-cell">Resolving...</td>
                 `;
                 tbody.appendChild(row);
 
-               
                 lookupISP(cleanIP, ispCellId);
             }
 
         } catch (err) {
             console.error(err);
             statusEl.innerText = "Error: Could not connect to API.";
+            statusEl.style.color = "#ef4444";
         }
     }
 
@@ -143,9 +271,7 @@
                 } else {
                     el.innerText = "Lookup Failed";
                 }
-            } catch(err2) {
-        
-            }
+            } catch(err2) { }
         }
     }
 </script>

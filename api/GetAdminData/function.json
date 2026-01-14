@@ -15,11 +15,12 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "allRecords",
+      "name": "visitorDoc",
       "databaseName": "PortfolioDB",
-      "collectionName": "LikeTracker",
+      "collectionName": "VisitorStats",
       "connectionStringSetting": "CosmosDbConnectionString",
-      "sqlQuery": "SELECT * FROM c"
+      "id": "main-counter", 
+      "partitionKey": "main-counter"
     }
   ]
 }
