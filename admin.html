@@ -71,7 +71,7 @@
               
                 const errorData = await response.json(); 
                
-                statusEl.innerText = errorData.message; 
+                statusEl.innerText = errorData.body.message; 
                 statusEl.style.color = "#ef4444";
                 return;
             }
