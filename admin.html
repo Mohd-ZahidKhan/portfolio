@@ -50,7 +50,7 @@
 </div>
 
 <script>
-    
+
     const API_BASE = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetAdminData";
 
     async function fetchLogs() {
@@ -61,31 +61,59 @@
 
         if (!key) { statusEl.innerText = "Please enter a key."; return; }
 
-        statusEl.innerText = "Authenticating...";
-        tbody.innerHTML = ""; 
+        statusEl.innerText = "Authenticating & Fetching Data...";
+        tbody.innerHTML = "";
 
         try {
             const response = await fetch(`${API_BASE}?key=${key}`);
 
+           
             if (response.status === 401) {
-              
                 const errorData = await response.json(); 
-               
-                statusEl.innerText = errorData.body.message; 
-                statusEl.style.color = "#ef4444";
-                return;
+         
+                statusEl.innerText = errorData.message; 
+                statusEl.style.color = "#ef4444"; 
+                return; 
             }
-            
+
             if (!response.ok) {
                 statusEl.innerText = "Server Error: " + response.status;
                 return;
             }
-          
+
+      
             const data = await response.json();
-            statusEl.innerText = `✅ Success: ${data.length} records found.`;
+            statusEl.innerText = `✅ Success: ${data.length} records found. Resolving ISPs...`;
             statusEl.style.color = "#22c55e";
             table.style.display = "table";
-            
+
+       
+            data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            for (const item of data) {
+                const row = document.createElement('tr');
+                const dateStr = new Date(item.timestamp).toLocaleString();
+                
+
+                let cleanIP = item.ip || "Unknown";
+                if (cleanIP.includes(':')) {
+                    cleanIP = cleanIP.split(':')[0];
+                }
+                
+                
+                const ispCellId = `isp-${cleanIP.replace(/[^a-zA-Z0-9]/g, '')}-${Math.floor(Math.random() * 1000)}`;
+
+                row.innerHTML = `
+                    <td>${dateStr}</td>
+                    <td style="color:white;">${cleanIP}</td>
+                    <td id="${ispCellId}" class="isp-cell">Resolving...</td>
+                `;
+                tbody.appendChild(row);
+
+               
+                lookupISP(cleanIP, ispCellId);
+            }
+
         } catch (err) {
             console.error(err);
             statusEl.innerText = "Error: Could not connect to API.";
@@ -95,28 +123,28 @@
     async function lookupISP(ip, elementId) {
         try {
             const res = await fetch(`https://ipapi.co/${ip}/json/`);
-            
-            if (!res.ok) throw new Error("Rate limit or error");
+            if(!res.ok) throw new Error("Limit");
             
             const data = await res.json();
             const el = document.getElementById(elementId);
             
-            if (data.org) {
-                el.innerHTML = `<span class="isp-highlight">${data.org}</span> (${data.city}, ${data.country_name})`;
+            if (data.org || data.city) {
+                el.innerHTML = `<span class="isp-highlight">${data.org || 'ISP'}</span> (${data.city}, ${data.country_name})`;
             } else {
-                el.innerText = "Unknown / Private IP";
+                el.innerText = "Private / Unknown";
             }
         } catch (e) {
-            console.log("ISP lookup failed for", ip);
             try {
                 const backupRes = await fetch(`https://ipwho.is/${ip}`);
                 const backupData = await backupRes.json();
                 const el = document.getElementById(elementId);
                 if(backupData.success) {
                     el.innerHTML = `<span class="isp-highlight">${backupData.connection.isp}</span> (${backupData.city}, ${backupData.country})`;
+                } else {
+                    el.innerText = "Lookup Failed";
                 }
             } catch(err2) {
-                document.getElementById(elementId).innerText = "Lookup Failed";
+        
             }
         }
     }
