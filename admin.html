@@ -9,21 +9,21 @@
         body { background-color: #020617; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* Login Box */
+    
         .login-box { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
         input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 5px; font-family: inherit; width: 300px; }
         button { background: #22c55e; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
         button:hover { background: #4ade80; }
 
-        /* Data Table */
-        table { width: 100%; border-collapse: collapse; display: none; } /* Hidden by default */
+    
+        table { width: 100%; border-collapse: collapse; display: none; } 
         th { text-align: left; color: #06b6d4; padding: 15px; border-bottom: 1px solid #334155; }
         td { padding: 15px; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
         tr:hover { background: rgba(255,255,255,0.02); }
         
         .status-msg { margin-top: 10px; color: #facc15; }
         .isp-cell { color: #94a3b8; font-size: 0.85rem; }
-        .isp-highlight { color: #e879f9; } /* Highlights the ISP name */
+        .isp-highlight { color: #e879f9; } 
     </style>
 </head>
 <body>
@@ -62,10 +62,10 @@
         if (!key) { statusEl.innerText = "Please enter a key."; return; }
 
         statusEl.innerText = "Authenticating & Fetching Data...";
-        tbody.innerHTML = ""; // Clear old data
+        tbody.innerHTML = "";
 
         try {
-            // 1. Call Azure API with the Key
+
             const response = await fetch(`${API_BASE}?key=${key}`);
 
             if (response.status === 401) {
@@ -79,15 +79,14 @@
             statusEl.style.color = "#22c55e";
             table.style.display = "table";
 
-            // Sort newest first
+
             data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            // 2. Build the Table
+
             for (const item of data) {
                 const row = document.createElement('tr');
                 const dateStr = new Date(item.timestamp).toLocaleString();
-                
-                // Unique ID for the ISP cell so we can update it later
+
                 const ispCellId = `isp-${item.ip.replace(/[^a-zA-Z0-9]/g, '')}`;
 
                 row.innerHTML = `
@@ -97,7 +96,7 @@
                 `;
                 tbody.appendChild(row);
 
-                // 3. Fetch ISP info (Async)
+            
                 lookupISP(item.ip, ispCellId);
             }
 
@@ -107,21 +106,32 @@
         }
     }
 
-    // Function to check ISP using free API
     async function lookupISP(ip, elementId) {
         try {
-            // Using ip-api.com (Free, non-SSL)
-            const res = await fetch(`http://ip-api.com/json/${ip}`);
-            const data = await res.json();
+            const res = await fetch(`https://ipapi.co/${ip}/json/`);
             
+            if (!res.ok) throw new Error("Rate limit or error");
+            
+            const data = await res.json();
             const el = document.getElementById(elementId);
-            if (data.status === "success") {
-                el.innerHTML = `<span class="isp-highlight">${data.isp}</span> (${data.city}, ${data.country})`;
+            
+            if (data.org) {
+                el.innerHTML = `<span class="isp-highlight">${data.org}</span> (${data.city}, ${data.country_name})`;
             } else {
                 el.innerText = "Unknown / Private IP";
             }
         } catch (e) {
             console.log("ISP lookup failed for", ip);
+            try {
+                const backupRes = await fetch(`https://ipwho.is/${ip}`);
+                const backupData = await backupRes.json();
+                const el = document.getElementById(elementId);
+                if(backupData.success) {
+                    el.innerHTML = `<span class="isp-highlight">${backupData.connection.isp}</span> (${backupData.city}, ${backupData.country})`;
+                }
+            } catch(err2) {
+                document.getElementById(elementId).innerText = "Lookup Failed";
+            }
         }
     }
 </script>
