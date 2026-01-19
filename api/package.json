@@ -1,8 +1,7 @@
 {
-  "name": "visitor-api",
+  "name": "portfolio-api",
   "version": "1.0.0",
-  "description": "API for Portfolio",
   "dependencies": {
-    "@azure/cosmos": "^3.17.3"
+    "@vercel/kv": "^1.0.1"
   }
 }
