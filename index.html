@@ -733,7 +733,7 @@
         });
 
     likeBtnWrapper.addEventListener('click', () => {
-        if (localStorage.getItem('hasLiked') === 'true') {
+        if (likeBtnWrapper.classList.contains('liked')) {
             alert("You've already liked this!");
             return;
         }
