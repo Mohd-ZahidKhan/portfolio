@@ -698,7 +698,7 @@
     </div>
 
     <footer class="site-footer">
-        <span>version 2.0.0</span>
+        <span>version 2.0.1</span>
         <span>MZK™</span>
     </footer>
 
@@ -713,28 +713,36 @@
         
         const likeBtnWrapper = document.getElementById('likeBtn');
         const likeCountLabel = document.getElementById('likeCountLabel');
+        const API_URL = 'https://zahid-khan-portfolio.vercel.app/api/likes';
         const LIKE_KEY = 'portfolio_likes_local';
+        
+        likeCountLabel.innerText = "---";
 
-        let count = parseInt(localStorage.getItem(LIKE_KEY)) || 12; 
-        likeCountLabel.innerText = count;
+    if (localStorage.getItem('hasLiked') === 'true') {
+        likeBtnWrapper.classList.add('liked');
+    }
 
-        if (localStorage.getItem(LIKE_KEY + '_hasLiked') === 'true') {
-            likeBtnWrapper.classList.add('liked');
+    fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+            likeCountLabel.innerText = data.likes;
+        })
+        .catch(err => console.error("API Error:", err));
+
+    likeBtnWrapper.addEventListener('click', () => {
+        if (localStorage.getItem('hasLiked') === 'true') {
+            alert("You've already liked this!");
+            return;
         }
 
-        likeBtnWrapper.addEventListener('click', () => {
-            if (likeBtnWrapper.classList.contains('liked')) {
-                alert("You have already liked this portfolio!");
-                return;
-            }
+        let current = parseInt(likeCountLabel.innerText) || 0;
+        likeCountLabel.innerText = current + 1;
+        likeBtnWrapper.classList.add('liked');
+        localStorage.setItem(LIKE_KEY, 'true');
 
-            count++;
-            likeCountLabel.innerText = count;
-            likeBtnWrapper.classList.add('liked');
-            
-            localStorage.setItem(LIKE_KEY, count);
-            localStorage.setItem(LIKE_KEY + '_hasLiked', 'true');
-        });
+        fetch(API_URL, { method: 'POST' })
+            .catch(err => console.error("Failed to save like:", err));
+    });
 
 
         const phrases = ["Azure Architect", "Cloud Security", "Microsoft Expert", "Financial Expert"];
