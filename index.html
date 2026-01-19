@@ -49,7 +49,6 @@
         .sphere-1 { width: 50vw; height: 50vw; background: #1d4ed8; top: -10%; left: -10%; }
         .sphere-2 { width: 40vw; height: 40vw; background: #7e22ce; bottom: 0; right: -10%; }
 
-        /* --- NAVIGATION --- */
         nav { 
             position: fixed; top: 0; left: 0; width: 100%; 
             padding: 15px 40px; 
@@ -62,13 +61,13 @@
             font-weight: 900; 
             letter-spacing: 2px; 
             font-size: 1.2rem; 
-            white-space: nowrap; /* Prevent logo wrapping */
+            white-space: nowrap; 
         }
         
         .nav-actions { 
             display: flex; 
             align-items: center; 
-            gap: 15px; /* Even spacing between nav items */
+            gap: 15px; 
         }
         
         .hire-btn { font-size: 0.9rem; color: var(--neon-blue); background: rgba(6, 182, 212, 0.05); border: 1px solid var(--neon-blue); padding: 8px 20px; border-radius: 30px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); white-space: nowrap; }
@@ -101,7 +100,33 @@
             filter: grayscale(100%);
         }
 
-        /* --- NAVBAR LIKE BUTTON --- */
+        .nav-icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .nav-icon-wrapper:hover {
+            border-color: var(--neon-green);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        .nav-icon-wrapper svg {
+            width: 20px;
+            height: 20px;
+            fill: #94a3b8;
+            transition: 0.3s;
+        }
+        .nav-icon-wrapper:hover svg {
+            fill: var(--neon-green);
+        }
+
         .nav-like-wrapper {
             display: flex;
             align-items: center;
@@ -132,7 +157,7 @@
         .nav-like-btn svg {
             width: 18px;
             height: 18px;
-            fill: #94a3b8; /* Default grey */
+            fill: #94a3b8; 
             transition: all 0.3s ease;
         }
 
@@ -156,7 +181,7 @@
             color: white;
         }
 
-        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 20px; z-index: 2; /* Content sits above meteors */ }
+        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 20px; z-index: 2; }
         .hero-container { perspective: 1000px; }
         
         .hero-content { 
@@ -250,7 +275,6 @@
         .contact-link { font-size: 1.1rem; color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: 0.3s; padding: 10px 20px; border-radius: 8px; }
         .contact-link:hover { color: white; background: rgba(255,255,255,0.1); transform: scale(1.05); }
 
-        /* Social Icons in Footer */
         .social-icons-wrapper { display: flex; gap: 20px; }
         .social-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
         .social-btn:hover { background: white; color: black; box-shadow: 0 0 20px white; transform: translateY(-3px); }
@@ -264,16 +288,6 @@
         .close-btn { color: #94a3b8; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .close-btn:hover { color: white; }
         
-        .visitor-content { max-width: 500px; height: auto; border-color: var(--neon-green); box-shadow: 0 0 50px rgba(34, 197, 94, 0.2); font-family: 'JetBrains Mono', monospace; }
-        .visitor-header { background: rgba(34, 197, 94, 0.1); padding: 15px 20px; border-bottom: 1px solid rgba(34, 197, 94, 0.3); display: flex; justify-content: space-between; align-items: center; }
-        .visitor-title { color: var(--neon-green); font-weight: 700; letter-spacing: 2px; }
-        .visitor-body { padding: 30px; }
-        
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
-        .data-label { color: #94a3b8; font-size: 0.9rem; }
-        .data-value { color: white; font-weight: 700; text-align: right; }
-        .status-active { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
-
         .cert-content { max-width: 900px; }
         .gallery-container { display: flex; align-items: center; justify-content: space-between; padding: 20px; gap: 20px; }
         .image-wrapper { width: 100%; height: auto; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-bottom: 20px; }
@@ -310,18 +324,57 @@
         .modal-content::-webkit-scrollbar-track { background: #020617; }
         .modal-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         .modal-content::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+        
+        .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+        .intel-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid var(--glass-border); }
+        .intel-label { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+        .intel-value { color: var(--neon-green); font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+        .intel-loading { animation: blink 1s infinite; }
 
-        /* --- UPDATED MOBILE CSS --- */
         @media (max-width: 900px) {
-            nav { padding: 10px 15px; } 
+            nav { 
+                padding: 10px; 
+            }
             
-            /* Reduced font size for logo on mobile to make space */
-            .nav-logo { font-size: 0.66rem; } 
+            .nav-logo { 
+                font-size: 0.65rem; 
+                max-width: 90px;
+                white-space: nowrap;
+              
+            }
             
-            .nav-actions { gap: 8px; } /* Tighter gap for actions */
+            .nav-actions { 
+                gap: 5px; 
+            }
+
+            .nav-icon-wrapper { 
+                width: 32px; 
+                height: 32px; 
+                margin-right: 2px;
+            }
+            .nav-icon-wrapper svg { width: 16px; height: 16px; }
+
+            .nav-like-wrapper { 
+                padding: 3px 8px 3px 3px; 
+                gap: 4px;
+            }
+            .nav-like-btn { 
+                width: 26px; 
+                height: 26px; 
+            }
+            .nav-like-btn svg { width: 14px; height: 14px; }
+            .nav-like-count { font-size: 0.75rem; }
+
+            .roll-btn-container { 
+                width: 32px; 
+                height: 32px; 
+            }
             
-            .roll-btn-container { width: 35px; height: 35px; }
-            .hire-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .hire-btn { 
+                padding: 6px 12px; 
+                font-size: 0.75rem; 
+                letter-spacing: 0.5px;
+            }
             
             section {
                 min-height: auto;
@@ -362,7 +415,6 @@
                 justify-content: center;
             }
 
-            /* --- FIXED FOOTER OVERFLOW --- */
             .contact-footer { 
                 flex-direction: column; 
                 gap: 20px; 
@@ -401,6 +453,8 @@
                 max-height: none !important;
                 object-fit: contain;
             }
+            
+            .intel-grid { grid-template-columns: 1fr; }
         }
 
         .site-footer {
@@ -412,23 +466,6 @@
         .site-footer span { transition: color 0.3s ease; cursor: default; }
         .site-footer span:hover { color: var(--neon-blue); }
 
-        .intel-btn {
-            display: flex; align-items: center; gap: 8px; cursor: pointer;
-            color: var(--neon-green); font-weight: 700; font-family: 'JetBrains Mono', monospace;
-            background: rgba(34, 197, 94, 0.05); padding: 8px 1px;
-            border-radius: 5px; border: 1px solid rgba(34, 197, 94, 0.3);
-            transition: all 0.3s ease; letter-spacing: 1px;
-        }
-        .intel-btn:hover {
-            background: rgba(34, 197, 94, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-            text-shadow: 0 0 10px var(--neon-green);
-        }
-        .blinking-cursor {
-            display: inline-block; width: 6px; height: 12px; background: var(--neon-green);
-            animation: blink 1s infinite;
-        }
     </style>
 </head>
 <body>
@@ -437,6 +474,10 @@
         <div class="nav-logo">MZK.ARCHITECT</div>
         
         <div class="nav-actions">
+            <div class="nav-icon-wrapper" id="intelBtn" title="System Intelligence">
+                <svg viewBox="0 0 24 24"><path d="M20,10V14H22V10H20M16,2V4H18V2H16M16,20V22H18V20H16M10,2V4H14V2H10M10,20V22H14V20H10M4,10V14H6V10H4M6,6V18H18V6H6M10,12H14V14H10V12M2,10H0V14H2V10M20,16V18H22V16H20M20,6V8H22V6H20M2,16H0V18H2V16M2,6H0V8H2V6M16,6H18V8H16V6M8,2V4H6V2H8M8,20V22H6V20H8" fill="currentColor"/></svg>
+            </div>
+
             <div class="nav-like-wrapper" id="likeBtn">
                 <div class="nav-like-btn">
                     <svg viewBox="0 0 24 24">
@@ -488,7 +529,7 @@
         <div class="about-card" id="aboutCard">
             <div class="about-text">
                 <h2>About Me</h2>
-                <p>I am a <span class="highlight">Certified Microsoft Cloud Professional</span> with hands-on experience in Azure administration. My focus is on building reliable systems that support organizational growth and ensure smooth operations.</p>
+                <p>I am a <span class="highlight">Certified Microsoft Azure Professional</span> with hands-on experience in Azure administration. My focus is on building reliable systems that support organizational growth and ensure smooth operations.</p>
                 <p>Currently, I serve as a Cloud Assistant at <strong>Nevon Solutions</strong>, managing Azure infrastructure, VM deployments, and secure networking. I am proficient in Linux, Terraform, and Microsoft Azure.</p>
             </div>
             <div class="skills-container">
@@ -530,7 +571,7 @@
             <div class="resume-body">
                 <div style="text-align:center; margin-bottom:30px;">
                     <h1 style="color:white; margin-bottom:5px;">MOHAMMED ZAHID KHAN</h1>
-                    <div style="color:var(--neon-blue);">Cloud Architect | Cloud Administrator</div>
+                    <div style="color:var(--neon-blue);">Azure Architect | Cloud Administrator</div>
                     <div style="color:#94a3b8; font-size:0.9rem; margin-top:5px;">Mumbai, India • +91-7045386763</div>
                 </div>
                 <div class="resume-section">
@@ -599,6 +640,33 @@
         </div>
     </div>
 
+    <div id="intelModal" class="modal">
+        <div class="modal-content" style="height: auto; max-width: 600px;">
+            <div class="modal-header">
+                <span style="font-weight:700; color:var(--neon-green);">SYSTEM INTELLIGENCE</span>
+                <span class="close-btn" id="closeIntel">&times;</span>
+            </div>
+            <div class="intel-grid">
+                <div class="intel-item">
+                    <div class="intel-label">Public IP Address</div>
+                    <div class="intel-value" id="ipValue"><span class="intel-loading">SCANNING...</span></div>
+                </div>
+                <div class="intel-item">
+                    <div class="intel-label">Screen Resolution</div>
+                    <div class="intel-value" id="screenValue">---</div>
+                </div>
+                <div class="intel-item">
+                    <div class="intel-label">Browser Platform</div>
+                    <div class="intel-value" id="platformValue">---</div>
+                </div>
+                <div class="intel-item">
+                    <div class="intel-label">Logical Cores</div>
+                    <div class="intel-value" id="coresValue">---</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="certModal" class="modal">
         <div class="modal-content cert-content">
             <div class="modal-header">
@@ -629,46 +697,8 @@
         <iframe id="fsPdf" style="display:none; width:90%; height:90vh; border:none;"></iframe>
     </div>
 
-    <div id="intelModal" class="modal">
-        <div class="modal-content visitor-content">
-            <div class="visitor-header">
-                <span class="visitor-title">> SYSTEM DIAGNOSTICS</span>
-                <span class="close-btn" id="closeIntel" style="font-size:24px;">&times;</span>
-            </div>
-            <div class="visitor-body">
-                <div class="data-row">
-                    <span class="data-label">PUBLIC IP</span>
-                    <span class="data-value status-active" id="real-ip">SCANNING...</span>
-                </div>
-                <div class="data-row">
-                    <span class="data-label">DEVICE TYPE</span>
-                    <span class="data-value" id="real-device">---</span>
-                </div>
-                <div class="data-row">
-                    <span class="data-label">OS PLATFORM</span>
-                    <span class="data-value" id="real-os">---</span>
-                </div>
-                <div class="data-row">
-                    <span class="data-label">SCREEN RESOLUTION</span>
-                    <span class="data-value" id="real-res">---</span>
-                </div>
-                <div class="data-row">
-                    <span class="data-label">ACTIVE TIME</span>
-                    <span class="data-value" id="real-time">00:00</span>
-                </div>
-                <div class="data-row" style="border:none;">
-                    <span class="data-label">CONNECTION TYPE</span>
-                    <span class="data-value" id="real-conn" style="color:var(--neon-blue);">---</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <footer class="site-footer">
-        <div class="intel-btn" id="intelBtn">
-            [ SYSTEM.INTEL ] <span class="blinking-cursor"></span>
-        </div>
-        <span>version 1.1.3</span>
+        <span>version 2.0.0</span>
         <span>MZK™</span>
     </footer>
 
@@ -676,124 +706,34 @@
         const isMobile = window.matchMedia("(max-width: 900px)").matches;
         let lastStarTime = 0;
         
-        // --- GLOBAL VARIABLES FOR DATA ---
-        const pageLoadTime = Date.now();
-        let globalIP = "SCANNING...";
-        let globalCount = "---";
-        let dbStatus = "CONNECTING...";
-        let dbColor = "yellow";
 
         const typingElement = document.getElementById('type-text');
         const cursorElement = document.querySelector('.cursor');
         const headerTag = document.querySelector('.header-tag');
-       
-        
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => { 
-                globalIP = data.ip; 
-                const ipEl = document.getElementById('real-ip');
-                if(ipEl) ipEl.innerText = globalIP;
-            })
-            .catch(error => { globalIP = "UNAVAILABLE"; });
-
-        const AZURE_VISITOR_URL = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/GetVisitorCount";
-
-        fetch(AZURE_VISITOR_URL)
-            .then(response => {
-                if (!response.ok) throw new Error("API not found");
-                return response.json();
-            })
-            .then(data => {
-                globalCount = data.count;
-                dbStatus = "AZURE DB CONNECTED";
-                dbColor = "var(--neon-green)";
-                const connLabel = document.getElementById('real-conn');
-                if(connLabel) {
-                    connLabel.innerText = dbStatus;
-                    connLabel.style.color = dbColor;
-                }
-            })
-            .catch(err => {
-                console.warn("Offline/Local Mode active");
-                dbStatus = "DEMO MODE (LOCAL)";
-                dbColor = "var(--neon-blue)";
-                globalCount = "101 (Demo)";
-            });
-
-        const AZURE_LIKES_URL = "https://ambitious-coast-05c28291e.2.azurestaticapps.net/api/ManageLikes";
-        
         
         const likeBtnWrapper = document.getElementById('likeBtn');
         const likeCountLabel = document.getElementById('likeCountLabel');
-        let hasLiked = localStorage.getItem('hasLiked') === 'true';
+        const LIKE_KEY = 'portfolio_likes_local';
 
-        // Set initial state
-        if (hasLiked) {
+        let count = parseInt(localStorage.getItem(LIKE_KEY)) || 12; 
+        likeCountLabel.innerText = count;
+
+        if (localStorage.getItem(LIKE_KEY + '_hasLiked') === 'true') {
             likeBtnWrapper.classList.add('liked');
         }
-        
-        // --- FETCH INITIAL COUNT & STATUS ---
-        fetch(AZURE_LIKES_URL)
-            .then(res => res.json())
-            .then(data => {
-                likeCountLabel.innerText = data.likes || 0;
-                
-                // CHECK: Does the server say we liked?
-                if (data.userHasLiked) {
-                    // YES: Turn Heart RED immediately
-                    likeBtnWrapper.classList.add('liked'); 
-                    hasLiked = true;
-                    localStorage.setItem('hasLiked', 'true'); // Sync local storage
-                }
-            })
-            .catch(err => console.log("Likes unavailable locally"));
 
-       // --- UPDATED LIKE BUTTON LOGIC ---
         likeBtnWrapper.addEventListener('click', () => {
-            // SCENARIO 1: Browser remembers they liked
-            if (hasLiked) {
+            if (likeBtnWrapper.classList.contains('liked')) {
                 alert("You have already liked this portfolio!");
-                return; 
+                return;
             }
 
-            // Optimistic Update (Update UI immediately for speed)
-            let previousCount = parseInt(likeCountLabel.innerText) || 0;
-            likeCountLabel.innerText = previousCount + 1;
+            count++;
+            likeCountLabel.innerText = count;
             likeBtnWrapper.classList.add('liked');
-
-            // Send request to Azure
-            fetch(AZURE_LIKES_URL, { method: 'POST' })
-                .then(async res => {
-                    // SCENARIO 2: Azure recognizes the IP and blocks it
-                    if (res.status === 403) {
-                        throw new Error("ALREADY_LIKED");
-                    }
-                    if (!res.ok) throw new Error("API Error");
-                    return res.json();
-                })
-                .then(data => {
-                    // Success: Update with confirmed count from DB
-                    likeCountLabel.innerText = data.likes;
-                    hasLiked = true;
-                    localStorage.setItem('hasLiked', 'true');
-                })
-                .catch(err => {
-                    if (err.message === "ALREADY_LIKED") {
-                        alert("You have already liked this portfolio! (Verified by Azure)");
-                        
-                        // Even though it failed, we mark them as liked locally 
-                        // so they don't try again
-                        hasLiked = true;
-                        localStorage.setItem('hasLiked', 'true');
-                    } else {
-                        // Genuine Error (Network fail, etc): Revert the UI
-                        console.error("Like failed", err);
-                        likeCountLabel.innerText = previousCount;
-                        likeBtnWrapper.classList.remove('liked');
-                        alert("Could not register like. Please try again.");
-                    }
-                });
+            
+            localStorage.setItem(LIKE_KEY, count);
+            localStorage.setItem(LIKE_KEY + '_hasLiked', 'true');
         });
 
 
@@ -887,50 +827,35 @@
             }, 10000);
         });
 
-        //INTEL MODAL LOGIC (UPDATED) 
         const intelBtn = document.getElementById('intelBtn');
         const intelModal = document.getElementById('intelModal');
         const closeIntel = document.getElementById('closeIntel');
+        const ipValue = document.getElementById('ipValue');
+        const screenValue = document.getElementById('screenValue');
+        const platformValue = document.getElementById('platformValue');
+        const coresValue = document.getElementById('coresValue');
 
         intelBtn.addEventListener('click', () => {
+            intelModal.style.display = "flex";
             lockScroll();
             
-            const ua = navigator.userAgent;
-            let device = "Desktop";
-            if (/Mobi|Android/i.test(ua)) device = "Mobile Device";
+            screenValue.innerText = `${window.screen.width} x ${window.screen.height}`;
+            platformValue.innerText = navigator.platform;
+            coresValue.innerText = navigator.hardwareConcurrency || 'N/A';
             
-            let os = "Unknown OS";
-            if (ua.indexOf("Win") != -1) os = "Windows";
-            if (ua.indexOf("Mac") != -1) os = "MacOS";
-            if (ua.indexOf("Linux") != -1) os = "Linux";
-            if (ua.indexOf("Android") != -1) os = "Android";
-            if (ua.indexOf("like Mac") != -1) os = "iOS";
-
-            document.getElementById('real-ip').innerText = globalIP;
-            document.getElementById('real-device').innerText = device;
-            document.getElementById('real-os').innerText = os;
-            document.getElementById('real-res').innerText = `${window.screen.width} x ${window.screen.height}`;
-
-            const now = Date.now();
-            const diff = Math.floor((now - pageLoadTime) / 1000);
-            const minutes = Math.floor(diff / 60);
-            const seconds = diff % 60;
-            const timeLabel = document.getElementById('real-time');
-            
-            timeLabel.innerText = `${minutes}m ${seconds}s`;
-            if(globalCount !== "---") {
-                 timeLabel.innerText += ` | Visits: ${globalCount}`;
-            }
-
-            const connLabel = document.getElementById('real-conn');
-            connLabel.innerText = dbStatus;
-            connLabel.style.color = dbColor;
-
-            intelModal.style.display = 'flex';
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    ipValue.innerText = data.ip;
+                })
+                .catch(error => {
+                    ipValue.innerText = "Error Fetching IP";
+                    console.error("IP Fetch Error:", error);
+                });
         });
 
-        closeIntel.onclick = () => {
-            intelModal.style.display = 'none';
+        closeIntel.onclick = function() {
+            intelModal.style.display = "none";
             unlockScroll();
         }
 
@@ -1069,8 +994,8 @@
         
         window.onclick = function(event) {
             if (event.target == modal) { modal.style.display = "none"; unlockScroll(); }
-            if (event.target == intelModal) { intelModal.style.display = "none"; unlockScroll(); }
             if (event.target == certModal) { certModal.style.display = "none"; unlockScroll(); }
+            if (event.target == intelModal) { intelModal.style.display = "none"; unlockScroll(); }
         }
 
         function createStar(x, y) {
