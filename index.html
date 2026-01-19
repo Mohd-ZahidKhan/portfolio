@@ -718,16 +718,19 @@
         
         likeCountLabel.innerText = "---";
 
-    if (localStorage.getItem('hasLiked') === 'true') {
-        likeBtnWrapper.classList.add('liked');
-    }
 
     fetch(API_URL)
         .then(res => res.json())
         .then(data => {
             likeCountLabel.innerText = data.likes;
+        if (data.userHasLiked) {
+                likeBtnWrapper.classList.add('liked');
+            }
         })
-        .catch(err => console.error("API Error:", err));
+        .catch(err => {
+            console.error("API Error:", err);
+            likeCountLabel.innerText = "---";
+        });
 
     likeBtnWrapper.addEventListener('click', () => {
         if (localStorage.getItem('hasLiked') === 'true') {
@@ -738,12 +741,18 @@
         let current = parseInt(likeCountLabel.innerText) || 0;
         likeCountLabel.innerText = current + 1;
         likeBtnWrapper.classList.add('liked');
-        localStorage.setItem(LIKE_KEY, 'true');
 
         fetch(API_URL, { method: 'POST' })
-            .catch(err => console.error("Failed to save like:", err));
+            .then(res => res.json())
+            .then(data=>{
+                likeCountLabel.innerText = data.likes;
+            })
+            .catch(err => {
+                console.error("Failed to save like:", err);
+                likeBtnWrapper.classList.remove('liked'); 
+                likeCountLabel.innerText = current; 
+            });
     });
-
 
         const phrases = ["Azure Architect", "Cloud Security", "Microsoft Expert", "Financial Expert"];
         const neonColors = ["#06b6d4", "#d946ef", "#22c55e"];
